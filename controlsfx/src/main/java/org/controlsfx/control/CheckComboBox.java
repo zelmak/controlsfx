@@ -44,6 +44,7 @@ import javafx.util.StringConverter;
 
 import java.util.HashMap;
 import java.util.Map;
+import javafx.beans.property.*;
 
 /**
  * A simple UI control that makes it possible to select zero or more items within
@@ -117,7 +118,7 @@ public class CheckComboBox<T> extends ControlsFXControl {
      * 
      **************************************************************************/
     
-    private final ObservableList<T> items;
+    private final ListProperty<T> items;
     private final Map<T, BooleanProperty> itemBooleanMap;
     private CheckComboBoxSkin<T> checkComboBoxSkin;
 
@@ -144,8 +145,8 @@ public class CheckComboBox<T> extends ControlsFXControl {
     public CheckComboBox(final ObservableList<T> items) {
         final int initialSize = items == null ? 32 : items.size();
         
+        this.items = new SimpleListProperty<T>(items);
         this.itemBooleanMap = new HashMap<>(initialSize);
-        this.items = items == null ? FXCollections.observableArrayList() : items;
         setCheckModel(new CheckComboBoxBitSetCheckModel<>(this.items, itemBooleanMap));
     }
 
@@ -156,12 +157,20 @@ public class CheckComboBox<T> extends ControlsFXControl {
      * 
      **************************************************************************/
     
+    public ListProperty<T> itemsProperty() {
+        return items;
+    }
+    
     /**
      * Represents the list of choices available to the user, from which they can
      * select zero or more items.
      */
     public ObservableList<T> getItems() {
-        return items;
+        return itemsProperty().get();
+    }
+    
+    public void setItems(ObservableList<T> newItems) { 
+        itemsProperty().set(newItems);
     }
     
     /**
